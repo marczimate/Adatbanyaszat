@@ -1,0 +1,59 @@
+
+html, body {
+	background-color: #343a40;
+    height: 100%;/* Teljes oldal lefedése */
+    overflow-x: hidden;  /* Megakadályozza a vízszintes görgetést */
+}
+
+/* Szabályok a 2-os tab lenyíló menüjéhez */
+.country-dropdown .Select-menu-outer {
+    width: 100% !important;  /* Beállítja a lenyíló menü szélességét */
+}
+
+.country-dropdown .Select-control {
+    width: 100% !important;  /* A vezérlő teljes szélessége maradjon */
+}
+
+
+.country-dropdown .Select-value-label {
+    color: #3498db;  /* Kiválasztott elem szöveg színe */
+}
+
+/* Szabályok a 4-es tab lenyíló menüjéhez */
+.life-expectancy-dropdown .Select-menu-outer {
+    width: 100% !important;  /* A lenyíló menü szélessége megegyezik a kiválasztó mezővel */
+}
+
+.life-expectancy-dropdown .Select-control {
+    width: 100% !important;  /* A vezérlő teljes szélessége */
+}
+
+
+/* Szabályok az 5-ös tab lenyíló menüjéhez */
+.variable-dropdown .Select-menu-outer {
+    width: 100% !important;  /* Beállítja a lenyíló menü szélességét */
+}
+
+.variable-dropdown .Select-control {
+    width: 100% !important;  /* A vezérlő teljes szélessége maradjon */
+}
+
+
+.variable-dropdown .Select-value-label {
+    color: #3498db;  /* Kiválasztott elem szöveg színe */
+}
+
+/* Szabályok a 6-os tab lenyíló menüjéhez */
+.dropdown .Select-menu-outer {
+    width: 100% !important;  /* Beállítja a lenyíló menü szélességét */
+}
+
+.dropdown .Select-control {
+    width: 100% !important;  /* A vezérlő teljes szélessége maradjon */
+}
+
+
+.dropdown .Select-value-label {
+    color: #3498db;  /* Kiválasztott elem szöveg színe */
+}
+
