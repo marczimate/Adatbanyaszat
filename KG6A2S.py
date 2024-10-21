@@ -32,7 +32,7 @@ except Exception as e:
     print(f"Hiba történt a fájl beolvasása közben: {e}")
 
 # Átalakítjuk a 'Life expectancy' oszlopot numerikus értékekre, ha szükséges
-data['Life expectancy'] = pd.to_numeric(data['Life expectancy'], errors='coerce')
+data['Life expectancy '] = pd.to_numeric(data['Life expectancy '], errors='coerce')
 
 # Manuális országnevek és kódok átalakítása
 country_name_mapping = {
@@ -79,12 +79,6 @@ app.layout = html.Div(
     children=[
         html.H1("Interaktív Dash Alkalmazás", style={'textAlign': 'center', 'color': '#3498db', 'padding-bottom': '20px'}),
 
-        # Stores for preserving input values across tabs
-        dcc.Store(id='country-store'),
-        dcc.Store(id='population-store'),
-        dcc.Store(id='gdp-store'),
-        dcc.Store(id='life-expectancy-store'),
-        dcc.Store(id='year-store'),
         
         # Tab struktúra létrehozása sötét háttérrel és világos feliratokkal
         dcc.Tabs(id="tabs-example", value='tab-1', children=[
@@ -147,14 +141,17 @@ def render_content(tab):
 
     # További tabok tartalmának kezelése
     elif tab == 'tab-2':
+        
+        countries_with_gdp = data.dropna(subset=['GDP'])['Country'].unique()
+        
         return html.Div([
             html.H3("Országok GDP elemzése évekre lebontva", style={'textAlign': 'center', 'color': '#3498db'}),
             dcc.Dropdown(
                 id='country-dropdown',
-                options=[{'label': country, 'value': country} for country in data['Country'].unique()],
+                options=[{'label': country, 'value': country} for country in countries_with_gdp],
                 value=None,
                 placeholder="Válasszon egy országot",
-                style={'width': '15%', 'margin': 'auto','color': '#3498db'},
+                style={'width': '25%', 'margin': 'auto','color': '#3498db'},
                 className='country-dropdown'
             ),
             dcc.Graph(id='gdp-graph'),
@@ -191,11 +188,14 @@ def render_content(tab):
 
 
     elif tab == 'tab-4':
+        
+        countries_with_life_expectancy = data.dropna(subset=['Life expectancy '])['Country'].unique()
+        
         return html.Div([
-        html.H3("Többváltozós legördülő: Várható élettartam", style={'textAlign': 'center', 'color': '#3498db'}),
+        html.H3("Országok várható élettartam elemzése évekre lebontva", style={'textAlign': 'center', 'color': '#3498db'}),
         dcc.Dropdown(
             id='multi-country-dropdown',
-            options=[{'label': country, 'value': country} for country in data['Country'].unique()],
+            options=[{'label': country, 'value': country} for country in countries_with_life_expectancy],
             multi=True,
             placeholder="Válasszon egy vagy több országot",
             style={'width': '30%', 'margin': 'auto', 'color': '#3498db'},
@@ -228,15 +228,31 @@ def render_content(tab):
                 dcc.Dropdown(
                     id='variable-dropdown',
                     options=[{'label': 'GDP', 'value': 'GDP'},
-                             {'label': 'Várható élettartam', 'value': 'Life expectancy'},
-                             {'label': 'Népesség', 'value': 'Population'}],
+                             {'label': 'Várható élettartam', 'value': 'Life expectancy '},
+                             {'label': 'Népesség', 'value': 'Population'},                 
+                             {'label': 'Felnőttkori halálozás', 'value': 'Adult Mortality'},
+                             {'label': 'Csecsemőhalálozás', 'value': 'infant deaths'},
+                             {'label': 'Alkohol fogysztás', 'value': 'Alcohol'},
+                             {'label': 'Kiadások aránya', 'value': 'percentage expenditure'},
+                             {'label': 'Hepatitisz B oltottság', 'value': 'Hepatitis B'},
+                             {'label': 'Kanyaró', 'value': 'Measles '},
+                             {'label': 'Átlagos testtömegindex', 'value': 'BMI '},
+                             {'label': '5 éves kor alatti halálozás', 'value': 'under-five deaths '},
+                             {'label': 'Polio oltottság', 'value': 'Polio'},
+                             {'label': 'Állami eü kiadások', 'value': 'Total expenditure'},
+                             {'label': 'Diftéria oltottság', 'value': 'Diphtheria '},
+                             {'label': 'HIV/AIDS halálozások', 'value': 'HIV/AIDS'},
+                             {'label': 'Soványság 1-19 éves', 'value': ' thinness  1-19 years'},
+                             {'label': 'Soványság 5-9 éves', 'value': ' thinness 5-9 years'},
+                             {'label': 'Emberi fejlettség', 'value': 'Income composition of resources'},
+                             {'label': 'Iskolai évek száma', 'value': 'Schooling'},],
                     placeholder="Válasszon egy változót",
-                    style={'width': '40%', 'margin': 'auto','color': '#3498db'},
+                    style={'width': '50%', 'margin': 'auto','color': '#3498db'},
                     className='variable-dropdown'
                 ),
                 
                 
-            ], style={'width': '30%', 'display': 'inline-block'}),  # Dropdown jobbra igazítva
+            ], style={'width': '40%', 'display': 'inline-block'}),  # Dropdown jobbra igazítva
         ], style={'display': 'flex', 'justify-content': 'space-between'}),  # Flexbox stílus a sorba rendezéshez
 
         html.Br(),
@@ -253,10 +269,26 @@ def render_content(tab):
         dcc.Dropdown(
             id='map-variable-dropdown',
             options=[{'label': 'GDP', 'value': 'GDP'},
-                     {'label': 'Várható élettartam', 'value': 'Life expectancy'},
-                     {'label': 'Népesség', 'value': 'Population'}],
+                     {'label': 'Várható élettartam', 'value': 'Life expectancy '},
+                     {'label': 'Népesség', 'value': 'Population'},                 
+                     {'label': 'Felnőttkori halálozás', 'value': 'Adult Mortality'},
+                     {'label': 'Csecsemőhalálozás', 'value': 'infant deaths'},
+                     {'label': 'Alkohol fogysztás', 'value': 'Alcohol'},
+                     {'label': 'Kiadások aránya', 'value': 'percentage expenditure'},
+                     {'label': 'Hepatitisz B oltottság', 'value': 'Hepatitis B'},
+                     {'label': 'Kanyaró', 'value': 'Measles '},
+                     {'label': 'Átlagos testtömegindex', 'value': 'BMI '},
+                     {'label': '5 éves kor alatti halálozás', 'value': 'under-five deaths '},
+                     {'label': 'Polio oltottság', 'value': 'Polio'},
+                     {'label': 'Állami eü kiadások', 'value': 'Total expenditure'},
+                     {'label': 'Diftéria oltottság', 'value': 'Diphtheria '},
+                     {'label': 'HIV/AIDS halálozások', 'value': 'HIV/AIDS'},
+                     {'label': 'Soványság 1-19 éves', 'value': ' thinness  1-19 years'},
+                     {'label': 'Soványság 5-9 éves', 'value': ' thinness 5-9 years'},
+                     {'label': 'Emberi fejlettség', 'value': 'Income composition of resources'},
+                     {'label': 'Iskolai évek száma', 'value': 'Schooling'},],
             placeholder="Válasszon egy változót",
-            style={'width': '15%', 'margin': 'auto', 'color': '#3498db'},
+            style={'width': '40%', 'margin': 'auto', 'color': '#3498db'},
     className='dropdown'
         ),
         html.Div(
@@ -278,24 +310,24 @@ def render_content(tab):
         value=None,
         placeholder="Válasszon egy évet",
         style={
-            'width': '100%',  # Dropdown teljes szélessége a szülő div-ben
-            'color': '#3498db',  # Szöveg színe
-            'backgroundColor': '#ffffff',  # Fehér háttérszín
-            'borderRadius': '5px',  # Lekerekített sarkok
-            'border': 'none',  # Szegély eltávolítása
-            'padding': '0px',  # Padding eltávolítása
-            'height': 'auto',  # Automatikus magasság
-            'line-height': 'normal',  # Normál sor magasság
-            'boxShadow': 'none'  # Árnyék eltávolítása
+            'width': '100%',  
+            'color': '#3498db', 
+            'backgroundColor': '#ffffff', 
+            'borderRadius': '5px',  
+            'border': 'none',
+            'padding': '0px',
+            'height': 'auto',
+            'line-height': 'normal',
+            'boxShadow': 'none'
         }
     ),
     style={
-        'width': '20%',  # Tovább csökkentve a szélességet
-        'margin': 'auto',  # Középre igazítás
-        'backgroundColor': '#ffffff',  # Fehér háttér
-        'borderRadius': '5px',  # Lekerekített sarkok
-        'padding': '0px',  # Padding eltávolítása a div-ből is
-        'boxShadow': '0 0 0 rgba(0, 0, 0, 0)'  # Árnyék teljes eltávolítása
+        'width': '20%',  
+        'margin': 'auto',
+        'backgroundColor': '#ffffff',
+        'borderRadius': '5px',
+        'padding': '0px',
+        'boxShadow': '0 0 0 rgba(0, 0, 0, 0)'
     }
 )
 
@@ -403,7 +435,7 @@ def translate_status(status):
     else:
         return 'Ismeretlen'
 
-# Callback a szűrt országokhoz (Tab 4) fejlettségi szinttel együtt
+# Callback a szűrt országokhoz (Tab 3) fejlettségi szinttel együtt
 @app.callback(
     Output('filtered-countries', 'children'),
     [Input('population-slider', 'value'),
@@ -449,11 +481,11 @@ def update_life_expectancy_graph(selected_countries):
     fig = px.line(
         filtered_data,
         x='Year',
-        y='Life expectancy',
+        y='Life expectancy ',
         color='Country',
         title='Várható élettartam alakulása több országban',
         labels={
-            'Life expectancy': 'Várható élettartam (év)',
+            'Life expectancy ': 'Várható élettartam (év)',
             'Year': 'Év',
             'Country': 'Ország'
         }
@@ -535,9 +567,26 @@ def update_histogram(selected_year, selected_variable, bins):
     
     # Fordítás létrehozása a kiválasztott változóhoz
     variable_translation = {
-        'Life expectancy': 'Várható élettartam',
+        'Life expectancy ': 'Várható élettartam',
         'Population': 'Népesség',
-        'GDP': 'GDP'
+        'Adult Mortality': 'Felnőttkori halálozás',
+        'infant deaths': 'Csecsemőhalálozás',
+        'GDP': 'GDP',
+        'Alcohol': 'Alkohol fogysztás',
+        'percentage expenditure': 'Kiadások aránya',
+        'Hepatitis B': 'Hepatitisz B oltottság',
+        'Measles ': 'Kanyaró',
+        'BMI ': 'Átlagos testtömegindex',
+        'under-five deaths ': '5 éves kor alatti halálozás',
+        'Polio': 'Polio oltottság',
+        'Total expenditure': 'Állami eü kiadások',
+        'Diphtheria ': 'Diftéria oltottság',
+        'HIV/AIDS': 'HIV/AIDS halálozások',
+        ' thinness  1-19 years': 'Soványság 1-19 éves',
+        ' thinness 5-9 years': 'Soványság 5-9 éves',
+        'Income composition of resources': 'Emberi fejlettség',
+        'Schooling': 'Iskolai évek száma',
+        
     }
     
     translated_variable = variable_translation.get(selected_variable, selected_variable)
@@ -599,7 +648,7 @@ def update_dynamic_map(selected_variable):
     
    # Fordítás létrehozása a kiválasztott változóhoz
     variable_translation = {
-        'Life expectancy': 'Várható élettartam',
+        'Life expectancy ': 'Várható élettartam',
         'Population': 'Népesség',
         'GDP': 'GDP'
     }
@@ -660,10 +709,10 @@ def update_regression_graph(selected_year, degree):
 
     # Ha van kiválasztott év, folytatjuk az adatfeldolgozást
     filtered_data = data[data['Year'] == selected_year]
-    filtered_data = filtered_data.dropna(subset=['GDP', 'Life expectancy'])
+    filtered_data = filtered_data.dropna(subset=['GDP', 'Life expectancy '])
 
     X = filtered_data['GDP'].values.reshape(-1, 1)
-    y = filtered_data['Life expectancy'].values
+    y = filtered_data['Life expectancy '].values
 
     poly = PolynomialFeatures(degree=degree)
     X_poly = poly.fit_transform(X)
@@ -678,7 +727,7 @@ def update_regression_graph(selected_year, degree):
     fig = go.Figure()
     # Az eredeti adatok trace
     fig.add_trace(go.Scatter(
-        x=filtered_data['GDP'], y=filtered_data['Life expectancy'],
+        x=filtered_data['GDP'], y=filtered_data['Life expectancy '],
         mode='markers', name='Eredeti adatok',
         hovertemplate='GDP: %{x}<br>Várható élettartam: %{y}',  # Csak x és y értékek megjelenítése
     ))
